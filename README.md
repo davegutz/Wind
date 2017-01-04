@@ -30,11 +30,22 @@ Lab Project
 8.  Habitually calibrate your ESC:
         - Open loop on board
         - Set POT to max
-        - Power the ESC.   Wait for beep
-        - Set POT to min.   Wait for two beeps
+        - Power the ESC.   Wait for beep followed by two in quick succession
+        - Set POT to min.   Wait for three beeps
     Calibration may last 100 runs or it may last 1 run.   Motion of the POT
     can undo calibration if you're not hearing all the beeps.  
     Beware of this.   It's the most common problem.
+    When you start up get in the habit of spot-checking calibration:
+        - Nt moves at throttle 5-15 deg
+        - 80% Nt at throttle 180 deg
+9.  Normal startup
+    - Microcontroller powered and at 0 deg throttle (either open or closed loop); wind power supply off
+    - Turn on wind power supply.    Wait and should hear 3 beeps followed by 1
+10. Control checkout
+    It is possible to close the loop using embedded model before firing up the turbine and damaging something.
+    In potWind.ino set bareOrTest=True, recompile, reload, and run without turbine powered.
+    Observe output as though running with turbine (feedback switched internally).
+    The CLAW embedded model will have an erroneous Ng(throttle) characteristic because the Arduino throughput will not support a table lookup here.
 
 # FAQ
 1.  Coolterm “Port not found.”  
@@ -42,9 +53,18 @@ Lab Project
     Restart Coolterm if necessary
     Turn off Arduino IDE USB monitor
 2.  Suddenly bad stability.   Recalibrate ESC.
+    When you start up get in the habit of spot-checking calibration:
+        - Nt moves at throttle 5-15 deg
+        - 80% Nt at throttle 180 deg
 3.  No response.  Check for loose wires on board.
 4.  Poor response.   Check for reversed wires on ESC to 3-phase. 
     Confirm direction of airflow into inlet of gas generator.
+5.  Arduino IDE:  port not found following ctrl-u
+    Arduino-Tools-Port-Select Arduino
+6.  ESC_SIM:  Invalid setting in 'ESC_SIM/ESC_Core_Tur/Rate_Transition1' for parameter 'InitCond'
+    There is a NaN in data vector.  It is probably the first row.
+    Open MOD.source file and delete offending row.   Resave it and rerun ESC_SIM.
+
 
 
 # Expected Results

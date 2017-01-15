@@ -10,15 +10,17 @@ Lab Project
         i.  https://www.arduino.cc/en/Main/Software    get the Windows ZIP file for non-admin install
         ii. Unzip into your “My Documents”
             Ref:  https://www.arduino.cc/en/Guide/PortableIDE  Summary follows so shouldn’t have to go here
-3.  Browse to Arduino-1.6.x, the root.   Create a new directory called “portable” alongside the others
+		iii.When installed, it creates folder Arduino-1.x.x where you told it to.   This is the "root" in what follows.
+3.  Browse to Arduino-1.x.x, the root.   Create a new directory called “portable” alongside the others
 4.  Launch the Arduino executable “arduino.exe” found in the root.  This is the IDE.
     a.  Create/Save shortcuts to taskbar and Start
     b.  IDE-File - preferences - uncheck "Show verbose output during compilation" - set Compiler warnings = none.
         Be sure to click OK even if made no changes (do not press “X”).
     c.  Close the IDE.   The defaults are now set.
-5.  Browse to root/portable/sketchbook.   Create symbolic link to source
-    a.  right-click on potESC in  <root>\portable\sketchbook and “pick link source”
-    b.  right-click in sketchbook.  Drop-as Symbolic link.
+5.  Browse to <root>/portable/sketchbook (Arduino-1.x.x) to create symbolic link to source
+	a.  Browse to this installation folder, where this README.md file is kept.   This is <source> in what follows.
+    b.  right-click on myWindCode in  <source>\portable\sketchbook and “pick link source”
+    c.  right-click in <root>\portable\sketchbook.  Right-click - Drop-as - Symbolic link.
 6.  Open the IDE.   File-open-browse to potWind.ino.   Click it open.
     Close all other IDE windows so IDE remembers your default choice.
      Reference: https://www.arduino.cc/en/Reference/HomePage
@@ -61,9 +63,11 @@ Lab Project
     Confirm direction of airflow into inlet of gas generator.
 5.  Arduino IDE:  port not found following ctrl-u
     Arduino-Tools-Port-Select Arduino
-6.  ESC_SIM:  Invalid setting in 'ESC_SIM/ESC_Core_Tur/Rate_Transition1' for parameter 'InitCond'
+6.  Wind_SIM:  Invalid setting in 'Wind_SIM/ESC_Core_Tur/Rate_Transition1' for parameter 'InitCond'
     There is a NaN in data vector.  It is probably the first row.
-    Open MOD.source file and delete offending row.   Resave it and rerun ESC_SIM.
+    Open MOD.source file and delete offending row.   Resave it and rerun Wind_SIM.
+7.  Arduino IDE:  When compiling, "The system cannot find the path specified."   This means the IDE is opened in the wrong folder.    Start another IDE session by Arduino - File - Open or Open Recent. 
+
 
 
 

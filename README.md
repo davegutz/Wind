@@ -11,7 +11,7 @@ Lab Project
         ii. Unzip into your “My Documents”
             Ref:  https://www.arduino.cc/en/Guide/PortableIDE  Summary follows so shouldn’t have to go here
 		iii.When installed, it creates folder Arduino-1.x.x where you told it to.   This is the "root" in what follows.
-3.  Browse to Arduino-1.x.x, the root.   Create a new directory called “portable” alongside the others
+3.  Browse to Arduino-1.x.x, the root, in the unzipped Arduino..   Create a new directory called “portable” alongside the others
 4.  Launch the Arduino executable “arduino.exe” found in the root.  This is the IDE.
     a.  Create/Save shortcuts to taskbar and Start
     b.  IDE-File - preferences - uncheck "Show verbose output during compilation" - set Compiler warnings = none.

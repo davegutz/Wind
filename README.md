@@ -63,13 +63,18 @@ Lab Project
     Confirm direction of airflow into inlet of gas generator.
 5.  Arduino IDE:  port not found following ctrl-u
     Arduino-Tools-Port-Select Arduino
-6.  Wind_SIM:  Invalid setting in 'Wind_SIM/ESC_Core_Tur/Rate_Transition1' for parameter 'InitCond'
+6.  Simulink Wind_SIM:  Invalid setting in 'Wind_SIM/ESC_Core_Tur/Rate_Transition1' for parameter 'InitCond'
     There is a NaN in data vector.  It is probably the first row.
     Open MOD.source file and delete offending row.   Resave it and rerun Wind_SIM.
 7.  Arduino IDE:  When compiling, "The system cannot find the path specified."   This means the IDE is opened in the wrong folder.    Start another IDE session by Arduino - File - Open or Open Recent. 
 
-
-
+8.  Simulink Wind_SIM:  Multiple messages running Simulink Wind_SIM:   "x-values must be increasing."  or "Unsupported input format." There is data corruption in DS.V, easily fixed by hand.  Open the csv file.  Plot "time" all by itself with no x-values using excel plot.    See dropout.   Browse to row indicated by x-param.
+9.  Simulink Wind_SIM:  Transient truncated Simulink Wind_SIM running with vectors.   There are data dropouts in csv file.  Browse in csv file to the truncated time and delete bad rows of data.
+10. Simulink Wind_SIM:  There is an apparent mismatch between Nts and Nt_ref.  You are probably running in "test" mode.    Look at Figure 2 for these.
+11. Arduino IDE:  When compiling, "The systsem cannot find the path specified."  The  means the IDE is opened in the wrong folder.   Start another IDE session by using IDE Arduino - File - Open - or Open Recent.
+12. Simulink Wind_SIM:   "Reference to non-existent field 'tFinal'."  Cannot open the csv file.  Probably named badly.
+13. Simulink Wind_SIM:  "Error du to multiple causes."  "Reference to non-existent field 'vpot'".  You have "CALIBRATING" set in myWindCode.ino.   You can re-run or rename vf2v to vpot in csv file and ignore it but this will cause initialization to go badly.   So write the real vpot into csv file as constant.
+14.  Simulink Wind_SIM:  Why does Nts not equal NtsD?   Ng in the Simulink model is assumed to follow nominal trend, so same software logic can be used all units.   The real Ng is not nominal and will differ.
 
 # Expected Results
 Set "#define VECTOR" in potWind.ino

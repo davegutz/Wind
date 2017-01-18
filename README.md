@@ -32,8 +32,8 @@ Lab Project
 8.  Habitually calibrate your ESC:
         - Open loop on board
         - Set POT to max
-        - Power the ESC.   Wait for beep followed by two in quick succession
-        - Set POT to min.   Wait for three beeps
+        - Power the ESC.   Wait for musical phrase followed by two beeps in quick succession
+        - Set POT to min.   Wait for three beeps followed by one ready beep.
     Calibration may last 100 runs or it may last 1 run.   Motion of the POT
     can undo calibration if you're not hearing all the beeps.  
     Beware of this.   It's the most common problem.

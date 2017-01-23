@@ -21,7 +21,7 @@ SYSTEM_THREAD(ENABLED); // Make sure code always run regardless of network statu
 //#define CALIBRATING         // Use this to port converted v4 to the vpot serial signal for calibration
 int     verbose = 1;     // [1] Debug, as much as you can tolerate.   For Photon set using "v#"
 bool    bare = false;    // [false] The microprocessor is completely disconnected.  Fake inputs and sensors for test purposes.  For Photon set using "b"
-bool    test = false;    // [false] The turbine and ESC are disconnected.  Fake inputs and sensors for test purposes.  For Photon set using "t"
+bool    test = true;    // [false] The turbine and ESC are disconnected.  Fake inputs and sensors for test purposes.  For Photon set using "t"
 double  stepVal = 6;     // [6] Step input, %nf.  Try to make same as freqRespAdder
 
 #if TTYPE==0  // STEP

@@ -4,7 +4,7 @@
 #include "myTables.h"
 #include "myFilters.h"
 #define CTYPE 1   // 0=P+I, 1=I, 2=PID
-#define KIT   5   // -1=Photon, 0-5 = Arduino
+#define KIT  6    // -1=Photon, 0-5 = Arduino
 
 
 #if   CTYPE==0  // P+I
@@ -109,6 +109,8 @@ static const double P_NT_NG[2] = {8867,  1.0172};   // Coeff NT(rpm) to NG(rpm)
 static const double DCPDL = -1.4;                   // dCpdLambda, dimensionless.  Cp is power coefficient and Lambda is speed tip ratio
 static const double LAMBDA = 3.8;                   // Turbine tip speed ratio to air velocity, dimensionless
 static const double DELTAV = 11;                    // Air velocity turbine first moves, m/s
+#else
+#error "KIT undefined"
 #endif
 
 // Control Law Class

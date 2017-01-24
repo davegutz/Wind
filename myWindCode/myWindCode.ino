@@ -17,7 +17,7 @@ SYSTEM_THREAD(ENABLED); // Make sure code always run regardless of network statu
 // Test features
 // in myClaw.h  #define CTYPE 1   // 0=P+I, 1=I, 2=PID
 // in myClaw.h  #define KIT   1   // -1=Photon, 0-4 = Arduino
-#define TTYPE 2          // 0=STEP, 1=FREQ, 2=VECT, 3=RAMP (ramp is open loop only)
+#define TTYPE 3          // 0=STEP, 1=FREQ, 2=VECT, 3=RAMP (ramp is open loop only)
 //#define CALIBRATING         // Use this to port converted v4 to the vpot serial signal for calibration
 int     verbose = 1;     // [1] Debug, as much as you can tolerate.   For Photon set using "v#"
 bool    bare = false;    // [false] The microprocessor is completely disconnected.  Fake inputs and sensors for test purposes.  For Photon set using "b"
@@ -290,9 +290,9 @@ void setup()
   {
     //******************************************************************************************************************************
 #ifdef CALIBRATING
-    sprintf(buffer, "time,mode,vf2v,  pcntref,pcntSense,pcntSenseM,  err,state,thr, modPcng,T\n");
+    sprintf(buffer, "\ntime,mode,vf2v,  pcntref,pcntSense,pcntSenseM,  err,state,thr, modPcng,T\n");
 #else
-    sprintf(buffer, "time,mode,vpot,  pcntref,pcntSense,pcntSenseM,  err,state,thr, modPcng,T\n");
+    sprintf(buffer, "\ntime,mode,vpot,  pcntref,pcntSense,pcntSenseM,  err,state,thr, modPcng,T\n");
 #endif
     Serial.print(buffer);
   }
@@ -569,7 +569,7 @@ void loop()
     } // freqResp
     else
     {
-    sprintf(buffer, "time,mode,vpot,  pcntref,pcntSense,pcntSenseM,  err,state,thr, modPcng,T\n");
+    sprintf(buffer, "\ntime,mode,vpot,  pcntref,pcntSense,pcntSenseM,  err,state,thr, modPcng,T\n");
       if (verbose > 0)
       {
         sprintf(buffer, "%s,", String(elapsedTime, 6).c_str()); Serial.print(buffer);

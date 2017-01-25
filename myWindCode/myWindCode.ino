@@ -317,7 +317,9 @@ void setup()
 void loop()
 {
   int buttonState = 0;                    // Pushbutton
-  static bool closingLoop = false;        // Closing loop by pin cmd, T/F
+  static bool closingLoop = false;        // Persisted closing loop by pin cmd, T/F
+  static bool closingLoopLast = false;    // Last closing loop by pin cmd, T/F
+  static bool closingLoopPast = false;   // Past closing loop by pin cmd, T/F
   static bool stepping = false;           // Step by Photon send String
   bool control;                           // Control sequence, T/F
   bool publish;                           // Publish, T/F
@@ -347,6 +349,18 @@ void loop()
   // Executive
   if (start == 0UL) start = now;
   elapsedTime = double(now - start) * 1e-6;
+  publish = ((now - lastPublish) >= PUBLISH_DELAY - CLOCK_TCK / 2);
+  if (publish)
+  {
+    lastPublish = now;
+  }
+  unsigned long deltaTick = now - lastControl;
+  control = (deltaTick >= CONTROL_DELAY - CLOCK_TCK / 2);
+  if (control)
+  {
+    updateTime = float(deltaTick) / 1000000.0;
+    lastControl = now;
+  }
   if (bare)
   {
 #ifdef ARDUINO
@@ -355,7 +369,16 @@ void loop()
   }
   else
   {
-    closingLoop = (digitalRead(CL_PIN) == HIGH);
+    if ( control ) // Debounce three updates
+    {
+      bool closingLoopSwitch = (digitalRead(CL_PIN) == HIGH);
+      if (!closingLoop)
+        closingLoop = closingLoopLast && closingLoopPast && closingLoopSwitch;
+      else
+        closingLoop = !(!closingLoopLast && !closingLoopPast && !closingLoopSwitch);
+      closingLoopPast = closingLoopLast;
+      closingLoopLast = closingLoopSwitch;
+    }
   }
   buttonState = digitalRead(BUTTON_PIN);
 #ifdef ARDUINO
@@ -397,18 +420,6 @@ void loop()
     }
   }
 #endif
-  publish = ((now - lastPublish) >= PUBLISH_DELAY - CLOCK_TCK / 2);
-  if (publish)
-  {
-    lastPublish = now;
-  }
-  unsigned long deltaTick = now - lastControl;
-  control = (deltaTick >= CONTROL_DELAY - CLOCK_TCK / 2);
-  if (control)
-  {
-    updateTime = float(deltaTick) / 1000000.0;
-    lastControl = now;
-  }
 #if TTYPE==1 // FREQ
   if ( freqResp)
     analyzing = ( ((now - lastFR) >= FR_DELAY && !analyzer->complete()) );

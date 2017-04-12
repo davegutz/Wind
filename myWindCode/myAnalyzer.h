@@ -74,12 +74,12 @@ private:
   double wSlow_;                // Frequency of slowest expected mode, r/s
 };
 
-class Vector
+class myVector
 {
 public:
-  Vector();
-  Vector(const double tv[], const double vv[], const int nv);
-  ~Vector(){};
+  myVector();
+  myVector(const double tv[], const double vv[], const int nv);
+  ~myVector(){};
   // operators
   // functions
   double calculate(const double tnow);

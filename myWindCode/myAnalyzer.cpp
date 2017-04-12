@@ -304,9 +304,9 @@ void FRAnalyzer::publish()
 */
 }
 
-// Class Vector
-//Vector::Vector() : complete_(false), iv_(0), nv_(0), output_(0), time_(0){};
-Vector::Vector(const double tv[], const double vv[], const int nv)
+// Class myVector
+//myVector::myVector() : complete_(false), iv_(0), nv_(0), output_(0), time_(0){};
+myVector::myVector(const double tv[], const double vv[], const int nv)
     : complete_(false), iv_(0), nv_(nv), output_(0), time_(0), tnowStart_(0)
 {
   tv_ = new double[nv_];
@@ -318,7 +318,7 @@ Vector::Vector(const double tv[], const double vv[], const int nv)
   }
 };
 
-double Vector::calculate(const double tnow)
+double myVector::calculate(const double tnow)
 {
   if ( tnowStart_ == 0 )
   {
@@ -344,7 +344,7 @@ double Vector::calculate(const double tnow)
 };
 
 // Restart vector
-void Vector::complete(const bool set)
+void myVector::complete(const bool set)
 {
   iv_ = 0;
   complete_ = false;

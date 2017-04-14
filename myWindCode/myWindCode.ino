@@ -3,14 +3,13 @@
 //
 
 // Standard
-#define STANDALONE
 #ifdef ARDUINO
 #include <Servo.h>
 #include <Arduino.h>     // Used instead of Print.h - breaks Serial
 #else                    // Photon
 #include "application.h" // Should not be needed if file ino or Arduino
-#ifdef STANDALONE
-#include <Photon.h>     // Needed for CLI standalone
+#ifdef PARTICLE
+#include <Particle.h>     // Needed for CLI standalone
 #endif
 SYSTEM_THREAD(ENABLED); // Make sure code always run regardless of network status
 #endif

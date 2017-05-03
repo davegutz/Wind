@@ -20,11 +20,11 @@ SYSTEM_THREAD(ENABLED); // Make sure code always run regardless of network statu
 // Test features
 // in myClaw.h  #define CTYPE 1   // 0=P+I, 1=I, 2=PID
 // in myClaw.h  #define KIT   1   // -1=Photon, 0-4 = Arduino
-#define TTYPE 2          // 0=STEP, 1=FREQ, 2=VECT, 3=RAMP (ramp is open loop only)
+#define TTYPE 4          // 0=STEP, 1=FREQ, 2=VECT, 3=RAMP (ramp is open loop only), 4=RAND
 //#define CALIBRATING         // Use this to port converted v4 to the vpot serial signal for calibration
 int     verbose = 1;     // [1] Debug, as much as you can tolerate.   For Photon set using "v#"
-bool    bare = true;    // [false] The microprocessor is completely disconnected.  Fake inputs and sensors for test purposes.  For Photon set using "b"
-bool    test = true;    // [false] The turbine and ESC are disconnected.  Fake inputs and sensors for test purposes.  For Photon set using "t"
+bool    bare = false;    // [false] The microprocessor is completely disconnected.  Fake inputs and sensors for test purposes.  For Photon set using "b"
+bool    test = false;    // [false] The turbine and ESC are disconnected.  Fake inputs and sensors for test purposes.  For Photon set using "t"
 double  stepVal = 6;     // [6] Step input, %nf.  Try to make same as freqRespAdder
 
 #if TTYPE==0  // STEP
@@ -35,6 +35,8 @@ testType testOnButton = FREQ;
 testType testOnButton = VECT;
 #elif TTYPE==3  // RAMP
 testType testOnButton = RAMP;
+#elif TTYPE==4  // RAND
+testType testOnButton = RAND;
 #else
 #error "TTYPE bad"
 #endif
@@ -187,6 +189,7 @@ const double POT_SCL = (3.3 - POT_BIA) / POT_MAX; // Pot scalar, vdc
 #define PUBLISH_DELAY 15000UL // Time between cloud updates (), micros
 #endif
 #define CONTROL_DELAY 15000UL // Control law wait (), micros
+#define RAND_DELAY 1500000UL // Control law wait (), micros
 #define FR_DELAY 4000000UL    // Time to start FR, micros
 const double F2V_MIN = 0.0;   // Minimum F2V value, vdc
 const double POT_MIN = 0;     // Minimum POT value, vdc
@@ -194,7 +197,7 @@ const double DENS_SI = 1.225; // Air density, kg/m^3
 
 // Test
 bool freqResp = false;             // Perform frequency response test status
-bool vectoring = false;            // Perform vector test status
+//bool vectoring = false;            // Perform vector test status
 const int nsigFn = 4;              // Length of fn
 const int ntfFn = 2;               // Number of transfer  functions to calculate <= length(ix)
 double fn[4] = {0, 0, 0, 0};       // Functions to analyze
@@ -250,6 +253,17 @@ double Rtime_ = 0;          // Time into vector, s
 double RtnowStart_ = 0;     // now time of vector start reference, s
 bool Rcomplete_ = false;    // Status of vector, T=underway
 unsigned int Riv_ = 0;      // Index of present time in vector
+#endif
+
+#if TTYPE==4 // RAND
+// Test vector setup (functions at bottom of this file)
+bool RandComplete(void);
+double RandCalculate(double);
+void RandComplete(bool);
+double Voutput_ = 0;        // Excitation value
+double Vtime_ = 0;          // Time into vector, s
+double VtnowStart_ = 0;     // now time of vector start reference, s
+bool Vcomplete_ = false;    // Status of vector, T=underway
 #endif
 
 
@@ -319,20 +333,23 @@ void setup()
 
 void loop()
 {
+  static bool vectoring = false;            // Perform vector test status
   int buttonState = 0;                    // Pushbutton
   static bool closingLoop = false;        // Persisted closing loop by pin cmd, T/F
   static bool closingLoopLast = false;    // Last closing loop by pin cmd, T/F
   static bool closingLoopPast = false;   // Past closing loop by pin cmd, T/F
   static bool stepping = false;           // Step by Photon send String
   bool control;                           // Control sequence, T/F
+  bool randomizer;                        // Random sequence, T/F
   bool publish;                           // Publish, T/F
-  bool analyzing;                         // Begin analyzing, T/F
+  static bool analyzing;                         // Begin analyzing, T/F
   unsigned long now = micros();           // Keep track of time
   static unsigned long start = 0UL;       // Time to start looping, micros
   double elapsedTime;                     // elapsed time, micros
   static double updateTime = 0.0;         // Control law update time, sec
   static unsigned long lastControl = 0UL; // Last control law time, micros
   static unsigned long lastPublish = 0UL; // Last publish time, micros
+  static unsigned long lastRand = 0UL;    // Last publish time, micros
 #ifdef ARDUINO
   static unsigned long lastButton = 0UL;  // Last button push time, micros
   static unsigned long lastFR = 0UL;      // Last analyzing, micros
@@ -363,6 +380,12 @@ void loop()
   {
     updateTime = float(deltaTick) / 1000000.0;
     lastControl = now;
+    unsigned long deltaRand = now - lastRand;
+    randomizer = (deltaRand >= RAND_DELAY - CLOCK_TCK / 2);
+    if (randomizer)
+    {
+      lastRand = now;
+    }
   }
   if (bare)
   {
@@ -385,7 +408,7 @@ void loop()
   }
   buttonState = digitalRead(BUTTON_PIN);
 #ifdef ARDUINO
-  if (buttonState == HIGH && (now - lastButton > 2000000UL))
+  if (buttonState == HIGH && (now - lastButton > 200000UL))
   {
     lastButton = now;
     switch ( testOnButton )
@@ -420,6 +443,15 @@ void loop()
         vectoring = !vectoring;
         break;
       }
+      case RAND:
+      {
+#if TTYPE==4 // RAND
+        RandComplete(vectoring); // reset if doing vector
+#endif
+        vectoring = !vectoring;
+  sprintf(buffer, "%s\n", String(vectoring).c_str()); Serial.print(buffer);
+        break;
+      }
     }
   }
 #endif
@@ -432,6 +464,9 @@ void loop()
 #elif TTYPE==3 // RAMP
   if ( vectoring )
     analyzing = !Rcomplete();
+#elif TTYPE==4 // RAND
+  if ( randomizer && vectoring  )
+    analyzing = !RandComplete();
 #endif
   else
     analyzing = false;
@@ -463,6 +498,14 @@ void loop()
     {
 #if TTYPE==3  // RAMP
       Rcomplete(vectoring); // reset if doing vector
+#endif
+      vectoring = !vectoring;
+    }
+    String doZ = "Z\n";
+    if (inputString == doZ)
+    {
+#if TTYPE==4  // RAND
+      RandComplete(vectoring); // reset if doing vector
 #endif
       vectoring = !vectoring;
     }
@@ -555,6 +598,8 @@ void loop()
       if ( vectoring ) exciter = Vcalculate(elapsedTime);
 #elif TTYPE==3 // RAMP
       if ( vectoring ) exciter = Rcalculate(elapsedTime);
+#elif TTYPE==4 // RAND
+      if ( randomizer && vectoring ) exciter = RandCalculate(elapsedTime);
 #endif
     }
   }
@@ -610,6 +655,8 @@ void loop()
   if (Vcomplete()) vectoring = false;
 #elif TTYPE==3 // RAMP
   if (Rcomplete()) vectoring = false;
+#elif TTYPE==4 // RAND
+  if (randomizer && RandComplete()) vectoring = false;
 #endif
 }
 
@@ -721,3 +768,36 @@ void Rcomplete(const bool set)
   RtnowStart_ = 0;
 };
 #endif
+
+// Random calculator
+#if TTYPE==4  // RAND
+double RandCalculate(const double tnow)
+{
+  if ( VtnowStart_ == 0 )
+  {
+    VtnowStart_ = tnow;  // First call sets time
+    Vcomplete_ = false;
+  }
+  // Find location in vector
+  Vtime_ = tnow-VtnowStart_;
+  Voutput_ = random(80);
+  /*
+          sprintf_P(buffer, PSTR("time=%s"), String(time_).c_str());        Serial.print(buffer);
+          sprintf_P(buffer, PSTR(",iv=%s"), String(iv_).c_str());        Serial.print(buffer);
+          sprintf_P(buffer, PSTR(",tv[iv]=%s"), String(tv_[iv_]).c_str());        Serial.print(buffer);
+          sprintf_P(buffer, PSTR(",output=%s\n"), String(Voutput_).c_str());        Serial.print(buffer);
+*/
+  return ( Voutput_ );
+};
+
+bool RandComplete(void) { return (Vcomplete_); };
+
+// Restart vector
+void RandComplete(const bool set)
+{
+  Vcomplete_ = false;
+  Vtime_ = 0;
+  VtnowStart_ = 0;
+};
+#endif
+

@@ -4,7 +4,7 @@
 #include "myTables.h"
 #include "myFilters.h"
 #define CTYPE 1   // 0=P+I, 1=I, 2=PID
-#define KIT  -1    // -1=Photon, 0-5 = Arduino
+#define KIT   5    // -1=Photon, 0-5 = Arduino
 
 
 #if   CTYPE==0  // P+I

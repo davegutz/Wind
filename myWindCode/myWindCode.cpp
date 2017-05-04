@@ -1,3 +1,3 @@
-#ifdef ARDUINO
+#ifndef ARDUINO
 #include "main.h"
 #endif

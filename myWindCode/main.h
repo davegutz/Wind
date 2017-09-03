@@ -23,8 +23,8 @@ SYSTEM_THREAD(ENABLED); // Make sure code always run regardless of network statu
 #define TTYPE 4          // 0=STEP, 1=FREQ, 2=VECT, 3=RAMP (ramp is open loop only), 4=RAND
 //#define CALIBRATING         // Use this to port converted v4 to the vpot serial signal for calibration
 int     verbose = 1;     // [1] Debug, as much as you can tolerate.   For Photon set using "v#"
-bool    bare = true;    // [false] The microprocessor is completely disconnected.  Fake inputs and sensors for test purposes.  For Photon set using "b"
-bool    test = false;    // [false] The turbine and ESC are disconnected.  Fake inputs and sensors for test purposes.  For Photon set using "t"
+bool    bare = false;    // [false] The microprocessor is completely disconnected.  Fake inputs and sensors for test purposes.  For Photon set using "b"
+bool    test = true;    // [false] The turbine and ESC are disconnected.  Fake inputs and sensors for test purposes.  For Photon set using "t"
 double  stepVal = 6;     // [6] Step input, %nf.  Try to make same as freqRespAdder
 
 #if TTYPE==0  // STEP
@@ -275,6 +275,7 @@ void setup()
 #endif
   pinMode(BUTTON_PIN, INPUT);
   Serial.begin(230400);
+  //Serial.begin(250000);
   myservo.attach(PWM_PIN, 1000, 2000); // attaches the servo.  Only supported on pins that have PWM
   pinMode(POT_PIN, INPUT);
   pinMode(F2V_PIN, INPUT);
